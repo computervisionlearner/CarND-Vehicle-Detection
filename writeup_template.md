@@ -22,8 +22,9 @@ The goals / steps of this project are the following:
 [image5]: ./output_images/sliding_window_medium2.png
 [image6]: ./output_images/sliding_window_large.png
 [image7]: ./output_images/window_all.png
-[image7]: ./output_images/window_all.png
-[image7]: ./output_images/window_all.png
+[image8]: ./output_images/hot.png
+[image9]: ./output_images/lables.png
+[image10]: ./output_images/result_on_test.png
 [video1]: ./project_video.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
@@ -208,25 +209,23 @@ Ultimately I searched on 4 scales using YUV 3-channel HOG features, which provid
 ### Video Implementation
 
 ####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./out_vedio/project_video_out.mp4)
 
 
 ####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
 I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
 
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
+Here's an example result showing the heatmap from the test images, the result of `scipy.ndimage.measurements.label()` and the bounding boxes that overlaid on the images:
 
-### Here are six frames and their corresponding heatmaps:
+The hotmap:
+![alt text][image8]
 
-![alt text][image5]
+Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap:
+![alt text][image9]
 
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
-
+Here the resulting bounding boxes are drawn onto the test images:
+![alt text][image10]
 
 
 ---
@@ -235,5 +234,8 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+The main problems I face in your implementation of this project is find the right combination of sliding window search tatics. It took me a lot of time to try difference tatics and get the final result.
 
+My pipeline may fail on condition where a lot of car on the street, where the positive detections boxes on each car will probably pile up on each other. And in the condition like fog, rain where the shape of a car can't be properly capture, my classifier may not capable to make the right prediction. 
+
+Use the both the color features and hog features to train the classifer could improve the accuracy of prediction under more complicate condition.
