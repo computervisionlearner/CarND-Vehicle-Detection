@@ -38,7 +38,21 @@ You're reading it!
 
 ####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
 
-The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
+The code for extracted HOG features is in the line 68-79 of file "utils.py"
+```
+# Define a function to return HOG features and visualization
+def get_hog_features(img, orient, pix_per_cell, cell_per_block, vis=False, feature_vec=True):
+    if vis == True:
+        features, hog_image = hog(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
+                                  cells_per_block=(cell_per_block, cell_per_block), transform_sqrt=False, 
+                                  visualise=True, feature_vector=False)
+        return features, hog_image
+    else:      
+        features = hog(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
+                       cells_per_block=(cell_per_block, cell_per_block), transform_sqrt=False, 
+                       visualise=False, feature_vector=feature_vec)
+        return features
+```
 
 I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
@@ -53,7 +67,16 @@ Here is an example using the `YCrCb` color space and HOG parameters of `orientat
 
 ####2. Explain how you settled on your final choice of HOG parameters.
 
-I tried various combinations of parameters and...
+I tried various combinations of parameters to extra the features and use these features to train svm classfier, and pick the one that is perform best(have the highest test score)
+
+Here is my final parameters:
+```
+colorspace = 'RGB' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+orient = 9
+pix_per_cell = 8
+cell_per_block = 2
+hog_channel = 'ALL'
+```
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
