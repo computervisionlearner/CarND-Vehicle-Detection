@@ -218,7 +218,7 @@ for i in range(len(test_imgs)):
 #    plt.title('after thresholds')
    plt.imshow(out_imgs[i])
 
-project_outpath = 'vedio_out/test_video_out.mp4'
-project_video_clip = VideoFileClip("test_video.mp4")
-project_video_out_clip = project_video_clip.fl_image(search_car)
-project_video_out_clip.write_videofile(project_outpath, audio=False)
+#project_outpath = 'vedio_out/project_video_out.mp4'
+#project_video_clip = VideoFileClip("project_video.mp4")
+#project_video_out_clip = project_video_clip.fl_image(search_car)
+#project_video_out_clip.write_videofile(project_outpath, audio=False)
