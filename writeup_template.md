@@ -238,4 +238,4 @@ The main problems I face in your implementation of this project is find the righ
 
 My pipeline may fail on condition where a lot of car on the street, where the positive detections boxes on each car will probably pile up on each other. And in the condition like fog, rain where the shape of a car can't be properly capture, my classifier may not capable to make the right prediction. 
 
-Use the both the color features and hog features to train the classifer could improve the accuracy of prediction under more complicate condition.
+Use the both the color features and hog features to train the classifer could improve the accuracy of prediction under more complicate condition. And make my pipeline more robust.
