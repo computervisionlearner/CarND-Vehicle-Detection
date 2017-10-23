@@ -15,12 +15,12 @@ The goals / steps of this project are the following:
 * Estimate a bounding box for vehicles detected.
 
 [//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
-[image4]: ./examples/sliding_window.jpg
-[image5]: ./examples/bboxes_and_heat.png
-[image6]: ./examples/labels_map.png
+[image1]: ./output_images/data_examples.png
+[image2]: ./output_images/hog.png
+[image3]: ./output_images/sliding_window_small.png
+[image4]: ./output_images/sliding_window_medium1.png
+[image5]: ./output_images/sliding_window_medium2.png
+[image6]: ./output_images/sliding_window_large.png
 [image7]: ./examples/output_bboxes.png
 [video1]: ./project_video.mp4
 
@@ -60,35 +60,50 @@ I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an 
 
 I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
 
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+Here is an example using the `RGB` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
 
 
 ![alt text][image2]
 
 ####2. Explain how you settled on your final choice of HOG parameters.
 
-I tried various combinations of parameters to extra the features and use these features to train svm classfier, and pick the one that is perform best(have the highest test score)
+I tried various combinations of parameters to extract the features and use these features to train svm classfier, and pick the one that is perform best(have the highest test score)
 
 Here is my final parameters:
 ```
-colorspace = 'RGB' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
-orient = 9
-pix_per_cell = 8
+colorspace = 'YUV' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+orient = 11
+pix_per_cell = 16
 cell_per_block = 2
-hog_channel = 'ALL'
+hog_channel = 'ALL' # Can be 0, 1, 2, or "ALL"
 ```
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
+The code for trained a classifier is in the file "train.py"
 
-I trained a linear SVM using...
+I trained a linear SVM using the default parameter with only the hog features, and get a accuracy of 0.98 on the test data set.
 
 ###Sliding Window Search
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+I try out a lot of searching tatics and choose the conbination of 4 level sliding window:
+
+The level 1 have sliding window with 0.75 overlap and scales of 1.0, the sliding window look like:
 
 ![alt text][image3]
+
+The level 2 have sliding window with 0.75 overlap and scales of 1.5, the sliding window look like:
+
+![alt text][image4]
+
+The level 3 have sliding window with 0.75 overlap and scales of 2.0, the sliding window look like:
+
+![alt text][image5]
+
+The level 4 have sliding window with 0.75 overlap and scales of 3.5, the sliding window look like:
+
+![alt text][image6]
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
