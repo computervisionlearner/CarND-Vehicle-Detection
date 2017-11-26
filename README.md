@@ -209,103 +209,31 @@ def find_cars(img, ystart, ystop, scale, cspace, hog_channel, svc, X_scaler, ori
 
 ![alt text][image6]
 
-
-
-####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
-
-Extracting the hog features is time comsuming, for the performance of the classifier, I define the find_car method to etract the hog features once for each image, and use sub-sampling window to get the hog features to feat on the classifier.
-```
-def find_cars(img, ystart, ystop, scale, cspace, hog_channel, svc, X_scaler, orient,
-              pix_per_cell, cell_per_block, spatial_size, hist_bins, show_all_rectangles=False):
-    # array of rectangles where cars were detected
-    windows = []
-
-    img = img.astype(np.float32) / 255
-
-    img_tosearch = img[ystart:ystop, :, :]
-
-    # apply color conversion if other than 'RGB'
-    if cspace != 'RGB':
-        if cspace == 'HSV':
-            ctrans_tosearch = cv2.cvtColor(img_tosearch, cv2.COLOR_RGB2HSV)
-        elif cspace == 'LUV':
-            ctrans_tosearch = cv2.cvtColor(img_tosearch, cv2.COLOR_RGB2LUV)
-        elif cspace == 'HLS':
-            ctrans_tosearch = cv2.cvtColor(img_tosearch, cv2.COLOR_RGB2HLS)
-        elif cspace == 'YUV':
-            ctrans_tosearch = cv2.cvtColor(img_tosearch, cv2.COLOR_RGB2YUV)
-        elif cspace == 'YCrCb':
-            ctrans_tosearch = cv2.cvtColor(img_tosearch, cv2.COLOR_RGB2YCrCb)
-    else:
-        ctrans_tosearch = np.copy(img)
-
-    # rescale image if other than 1.0 scale
-    if scale != 1:
-        imshape = ctrans_tosearch.shape
-        ctrans_tosearch = cv2.resize(ctrans_tosearch, (np.int(imshape[1] / scale), np.int(imshape[0] / scale)))
-
-    # select colorspace channel for HOG
-    if hog_channel == 'ALL':
-        ch1 = ctrans_tosearch[:, :, 0]
-        ch2 = ctrans_tosearch[:, :, 1]
-        ch3 = ctrans_tosearch[:, :, 2]
-    else:
-        ch1 = ctrans_tosearch[:, :, hog_channel]
-
-    # Define blocks and steps as above
-    nxblocks = (ch1.shape[1] // pix_per_cell) + 1  # -1
-    nyblocks = (ch1.shape[0] // pix_per_cell) + 1  # -1
-    nfeat_per_block = orient * cell_per_block ** 2
-    # 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
-    window = 64
-    nblocks_per_window = (window // pix_per_cell) - 1
-    cells_per_step = 2  # Instead of overlap, define how many cells to step
-    nxsteps = (nxblocks - nblocks_per_window) // cells_per_step
-    nysteps = (nyblocks - nblocks_per_window) // cells_per_step
-
-    # Compute individual channel HOG features for the entire image
-    hog1 = utils.get_hog_features(ch1, orient, pix_per_cell, cell_per_block, feature_vec=False)
-    if hog_channel == 'ALL':
-        hog2 = utils.get_hog_features(ch2, orient, pix_per_cell, cell_per_block, feature_vec=False)
-        hog3 = utils.get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
-
-    for xb in range(nxsteps):
-        for yb in range(nysteps):
-            ypos = yb * cells_per_step
-            xpos = xb * cells_per_step
-            # Extract HOG for this patch
-            hog_feat1 = hog1[ypos:ypos + nblocks_per_window, xpos:xpos + nblocks_per_window].ravel()
-            if hog_channel == 'ALL':
-                hog_feat2 = hog2[ypos:ypos + nblocks_per_window, xpos:xpos + nblocks_per_window].ravel()
-                hog_feat3 = hog3[ypos:ypos + nblocks_per_window, xpos:xpos + nblocks_per_window].ravel()
-                hog_features = np.hstack((hog_feat1, hog_feat2, hog_feat3))
-            else:
-                hog_features = hog_feat1
-
-            xleft = xpos * pix_per_cell
-            ytop = ypos * pix_per_cell
-
-
-
-            test_prediction = svc.predict(hog_features)
-
-            if test_prediction == 1 or show_all_rectangles:
-                xbox_left = np.int(xleft * scale)
-                ytop_draw = np.int(ytop * scale)
-                win_draw = np.int(window * scale)
-                windows.append(
-                    ((xbox_left, ytop_draw + ystart), (xbox_left + win_draw, ytop_draw + win_draw + ystart)))
-
-    return windows
-```
-
-Ultimately I searched on 4 scales using YUV 3-channel HOG features, which provided a nice result.  Here are the result on the test image:
+应用在测试图片得到的下列结果：
 
 ![alt text][image7]
 
+可以看到存在一些多窗口重合及错误检测现象
+
 ---
 
-### Video Implementation
+#### 应用热力图(heatMap)过滤错误检测(false positive)
+
+由于使用多个大小不一滑动窗口，且窗口存在重叠，单个车辆图像会被多个窗口捕捉检测。使用这个现象可以过滤错误检测。
+
+记录一张图片上所有positive detections，使用记录的positive detections形成一个检测热力图：
+
+```
+def add_heat(heatmap, bbox_list):
+    # Iterate through list of bboxes
+    for box in bbox_list:
+        # Add += 1 for all pixels inside each bbox
+        # Assuming each "box" takes the form ((x1, y1), (x2, y2))
+        heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
+```
+
+以下应用在测试图片得到的检测热力图：
+![alt text][image8]
 
 ####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
 
@@ -319,7 +247,7 @@ I recorded the positions of positive detections in each frame of the video.  Fro
 Here's an example result showing the heatmap from the test images, the result of `scipy.ndimage.measurements.label()` and the bounding boxes that overlaid on the images:
 
 The hotmap:
-![alt text][image8]
+
 
 Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap:
 ![alt text][image9]
