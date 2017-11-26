@@ -252,5 +252,5 @@ def apply_threshold(heatmap, threshold):
  
 以下为应用在测试视频的最终结果：
 
-
+[结果视频](./vedio_out/project_video_out.mp4)
 
