@@ -235,37 +235,22 @@ def add_heat(heatmap, bbox_list):
 以下应用在测试图片得到的检测热力图：
 ![alt text][image8]
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
+然后对热力图进行阈值过滤,过滤错误检测,以下为阈值过滤实现代码:
+```
+def apply_threshold(heatmap, threshold):
+    # Zero out pixels below the threshold
+    heatmap[heatmap <= threshold] = 0
+    # Return thresholded map
+    return heatmap
+```
 
-Here's a [link to my video result](./vedio_out/project_video_out.mp4)
+ 最后使用`scipy.ndimage.measurements.label()`方法传入过滤后的热力图可获取整合的检测窗口。
+ 
+ 以下为pipeline应用在测试图片的效果：
+ 
+ ![alt text][image10]
+ 
+以下为应用在测试视频的最终结果：
 
-
-####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
-
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
-
-Here's an example result showing the heatmap from the test images, the result of `scipy.ndimage.measurements.label()` and the bounding boxes that overlaid on the images:
-
-The hotmap:
-
-
-Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap:
-![alt text][image9]
-
-Here the resulting bounding boxes are drawn onto the test images:
-![alt text][image10]
-
-
----
-
-###Discussion
-
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
-
-The main problems I face in your implementation of this project is find the right combination of sliding window search tatics. It took me a lot of time to try difference tatics and get the final result.
-
-My pipeline may fail on condition where a lot of car on the street, where the positive detections boxes on each car will probably pile up on each other. And in the condition like fog, rain where the shape of a car can't be properly capture, my classifier may not capable to make the right prediction. 
-
-Use the both the color features and hog features to train the classifer could improve the accuracy of prediction under more complicate condition. And make my pipeline more robust.
 
 
