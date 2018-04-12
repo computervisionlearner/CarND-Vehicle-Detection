@@ -5,7 +5,7 @@
 
 * 分析训练数据，提取图片HOG特征。
 * 训练分类器
-* 应用滑动窗口实现车辆检测
+* 应用滑动窗口(sliding windows)实现车辆检测
 * 应用热力图(heatMap)过滤错误检测(false positive)
 
 [//]: # (Image References)
@@ -101,7 +101,7 @@ print(round(t2-t, 5), 'Seconds to predict', n_predict,'labels with classfier')
 ```
 最终训练的分类器在测试数据集得到98.0%准确率
 
-#### 应用滑动窗口实现车辆检测
+#### 应用滑动窗口(sliding windows)实现车辆检测
 
 由于提取HOG特征比较耗时，先直接提取整张图片的HOG特征，然后获取每个窗口所属的那部分HOG特征，这样效率会更高，以下为滑动窗口搜索的代码实现：
 
