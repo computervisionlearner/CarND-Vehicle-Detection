@@ -217,11 +217,11 @@ def find_cars(img, ystart, ystop, scale, cspace, hog_channel, svc, X_scaler, ori
 
 ---
 
-#### 应用热力图(heatMap)过滤错误检测(false positive)
+#### 应用热图(heatMap)过滤错误检测(false positive)
 
 由于使用多个大小不一滑动窗口，且窗口存在重叠，单个车辆图像会被多个窗口捕捉检测。使用这个现象可以过滤错误检测。
 
-记录一张图片上所有positive detections，使用记录的positive detections形成一个检测热力图：
+记录一张图片上所有positive detections，使用记录的positive detections形成一个检测热图：
 
 ```
 def add_heat(heatmap, bbox_list):
@@ -232,10 +232,10 @@ def add_heat(heatmap, bbox_list):
         heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
 ```
 
-以下应用在测试图片得到的检测热力图：
+以下应用在测试图片得到的检测热图：
 ![alt text][image8]
 
-然后对热力图进行阈值过滤,过滤错误检测,以下为阈值过滤实现代码:
+然后对热图进行阈值过滤,过滤错误检测,以下为阈值过滤实现代码:
 ```
 def apply_threshold(heatmap, threshold):
     # Zero out pixels below the threshold
