@@ -1,6 +1,5 @@
 ## 车辆检测
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
-
+## Forked from https://github.com/yang1688899/CarND-Vehicle-Detection  
 **实现步骤：**
 
 * 分析训练数据，提取图片HOG特征。
